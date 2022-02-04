@@ -11,3 +11,12 @@ $ todo show
 
 $ todo complete 1
 ```
+
+## Commands
+
+```
+$ todo show         # Show todo itema
+$ todo clear        # Clear todo list
+$ todo complete NUM # Complete a single todo item
+$ todo add TODO     # Add a todo item
+```
