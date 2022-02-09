@@ -20,7 +20,6 @@ enum Action {
     Clear,
     Complete,
     Show,
-    Noop,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -135,15 +134,15 @@ impl std::fmt::Display for TodoList {
 }
 
 // convert user text to enum
-fn convert_to_action(action_string: &str) -> Action {
+fn convert_to_action(action_string: &str) -> Option<Action> {
     match action_string {
-        "a" => Action::Add,
-        "add" => Action::Add,
-        "c" => Action::Complete,
-        "complete" => Action::Complete,
-        "clear" => Action::Clear,
-        "show" => Action::Show,
-        _ => Action::Noop
+        "a" => Some(Action::Add),
+        "add" => Some(Action::Add),
+        "c" => Some(Action::Complete),
+        "complete" => Some(Action::Complete),
+        "clear" => Some(Action::Clear),
+        "show" => Some(Action::Show),
+        _ => None
     }
 }
 
@@ -182,16 +181,16 @@ fn main() {
 
     let options = String::from(args[2..].join(" ").trim());
 
-    let action: Action = convert_to_action(&subcommand);
+    let action: Option<Action> = convert_to_action(&subcommand);
 
      match action {
-         Action::Add => { todo_list.add(options); },
-         Action::Clear => { todo_list.clear(); },
-         Action::Complete => {
+         Some(Action::Add) => { todo_list.add(options); },
+         Some(Action::Clear) => { todo_list.clear(); },
+         Some(Action::Complete) => {
              let index = options.trim().parse::<i32>().unwrap() as usize - 1;
              todo_list.complete(index);
          },
-         Action::Show => { todo_list.show() },
-         Action::Noop => { println!("Action non-existant") }
+         Some(Action::Show) => { todo_list.show() },
+         None => { println!("Action not found") }
      }
 }
