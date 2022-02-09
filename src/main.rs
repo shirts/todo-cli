@@ -4,12 +4,13 @@ use std::{env};
 use std::io::prelude::*;
 
 extern crate dirs;
-
-#[macro_use]
-extern crate serde_derive;
 extern crate serde;
 extern crate serde_json;
 
+#[macro_use]
+extern crate serde_derive;
+
+const APP_NAME: &str = "todo-cli";
 const FILE_NAME: &str = "todo.json";
 const BACKUP_FILE_NAME: &str = ".todo.json.bak";
 
@@ -38,7 +39,7 @@ impl TodoList {
 
     // The place to save the todo file
     fn data_dir() -> PathBuf {
-        Path::new(&dirs::data_dir().unwrap()).join("todo")
+        Path::new(&dirs::data_dir().unwrap()).join(APP_NAME)
     }
 
     fn file_name() -> PathBuf {
