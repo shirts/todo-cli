@@ -58,7 +58,6 @@ impl TodoList {
             .open(TodoList::file_name())
             .unwrap();
 
-
         file
     }
 
@@ -182,7 +181,7 @@ fn main() {
 
     let options = String::from(args[2..].join(" ").trim());
 
-     let action: Action = convert_to_action(&subcommand);
+    let action: Action = convert_to_action(&subcommand);
 
      match action {
          Action::Add => { todo_list.add(options); },
