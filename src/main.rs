@@ -1,7 +1,7 @@
+use std::env;
 use std::fs::{File, OpenOptions};
-use std::path::{Path, PathBuf};
-use std::{env};
 use std::io::prelude::*;
+use std::path::{Path, PathBuf};
 
 extern crate dirs;
 extern crate serde;
@@ -24,7 +24,7 @@ enum Action {
 
 #[derive(Serialize, Deserialize, Debug)]
 struct TodoList {
-    items: Vec<String>
+    items: Vec<String>,
 }
 
 impl TodoList {
@@ -32,7 +32,8 @@ impl TodoList {
     fn load() -> TodoList {
         let mut file = TodoList::file();
         let mut json = String::new();
-        file.read_to_string(&mut json).expect("Failed to read file contents");
+        file.read_to_string(&mut json)
+            .expect("Failed to read file contents");
         serde_json::from_str(&json).unwrap()
     }
 
@@ -68,7 +69,8 @@ impl TodoList {
 
     // Create a backup of the todo file
     fn backup() {
-        std::fs::copy(TodoList::file_name(), TodoList::backup_file_name()).expect("Failed to backup");
+        std::fs::copy(TodoList::file_name(), TodoList::backup_file_name())
+            .expect("Failed to backup");
     }
 
     // Delete the todo file
@@ -80,7 +82,8 @@ impl TodoList {
     fn save(&self) -> TodoList {
         let mut file = TodoList::file();
         let stringified = serde_json::to_string(&self).unwrap();
-        file.write_all(stringified.as_bytes()).expect("Failed to save");
+        file.write_all(stringified.as_bytes())
+            .expect("Failed to save");
         TodoList::load()
     }
 
@@ -142,7 +145,7 @@ fn convert_to_action(action_string: &str) -> Option<Action> {
         "complete" => Some(Action::Complete),
         "clear" => Some(Action::Clear),
         "show" => Some(Action::Show),
-        _ => None
+        _ => None,
     }
 }
 
@@ -155,13 +158,15 @@ fn create_todo_file_if_not_exists() -> std::result::Result<(), std::io::Error> {
     if file_exists {
         // make sure it has the expected structure
         let mut contents = String::new();
-        TodoList::file().read_to_string(&mut contents).expect("Failed to read file contents");
+        TodoList::file()
+            .read_to_string(&mut contents)
+            .expect("Failed to read file contents");
         if contents == String::from("") {
             let todo_list = TodoList::inst();
             todo_list.save();
         }
 
-        return Ok(())
+        return Ok(());
     }
 
     let mut file = TodoList::file();
@@ -183,14 +188,18 @@ fn main() {
 
     let action: Option<Action> = convert_to_action(&subcommand);
 
-     match action {
-         Some(Action::Add) => { todo_list.add(options); },
-         Some(Action::Clear) => { todo_list.clear(); },
-         Some(Action::Complete) => {
-             let index = options.trim().parse::<i32>().unwrap() as usize - 1;
-             todo_list.complete(index);
-         },
-         Some(Action::Show) => { todo_list.show() },
-         None => { println!("Action not found") }
-     }
+    match action {
+        Some(Action::Add) => {
+            todo_list.add(options);
+        }
+        Some(Action::Clear) => {
+            todo_list.clear();
+        }
+        Some(Action::Complete) => {
+            let index = options.trim().parse::<i32>().unwrap() as usize - 1;
+            todo_list.complete(index);
+        }
+        Some(Action::Show) => todo_list.show(),
+        None => println!("Action not found"),
+    }
 }
