@@ -15,7 +15,10 @@ pub mod action;
 mod todo_list;
 use todo_list::TodoList;
 
-fn create_todo_file_if_not_exists() -> std::result::Result<(), std::io::Error> {
+mod config;
+use config::Config;
+
+fn create_todo_files() -> std::result::Result<(), std::io::Error> {
     std::fs::create_dir_all(TodoList::data_dir()).expect("Failed to create data directory");
 
     let file_exists: bool = Path::new(&TodoList::file_name()).exists();
@@ -25,10 +28,20 @@ fn create_todo_file_if_not_exists() -> std::result::Result<(), std::io::Error> {
         let mut contents = String::new();
         TodoList::file()
             .read_to_string(&mut contents)
-            .expect("Failed to read file contents");
+            .expect("Failed to read todo file contents");
         if contents == String::from("") {
             let todo_list = TodoList::inst();
             todo_list.save();
+        }
+
+        contents.clear();
+
+        Config::file()
+            .read_to_string(&mut contents)
+            .expect("Failed to read config file contents");
+        if contents == String::from("") {
+            let config = Config::inst();
+            config.save();
         }
 
         return Ok(());
@@ -36,7 +49,12 @@ fn create_todo_file_if_not_exists() -> std::result::Result<(), std::io::Error> {
 
     let mut file = TodoList::file();
     let todo_list = TodoList::inst();
-    let stringified = serde_json::to_string(&todo_list).unwrap();
+    let mut stringified = serde_json::to_string(&todo_list).unwrap();
+    file.write_all(stringified.as_bytes()).expect("Failed to write todo file");
+
+    file = Config::file();
+    let config = Config::inst();
+    stringified = serde_json::to_string(&config).unwrap();
     file.write_all(stringified.as_bytes())
 }
 
@@ -51,10 +69,13 @@ fn main() {
         process::exit(1);
     }
 
-    create_todo_file_if_not_exists()
+    create_todo_files()
         .expect("Failed to create todo file");
 
     let todo_list = TodoList::load();
+
+    let config = Config::load();
+    println!("{:#?}", config);
 
     match action {
         Some(Action::Add) => {

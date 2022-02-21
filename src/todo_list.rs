@@ -2,7 +2,7 @@ use std::path::{Path, PathBuf};
 use std::io::prelude::*;
 use std::fs::{File, OpenOptions};
 
-const APP_NAME: &str = "todo-cli";
+pub const APP_NAME: &str = "todo-cli";
 const FILE_NAME: &str = "todo.json";
 const BACKUP_FILE_NAME: &str = ".todo.json.bak";
 
@@ -73,7 +73,7 @@ impl TodoList {
         let mut file = TodoList::file();
         let stringified = serde_json::to_string(&self).unwrap();
         file.write_all(stringified.as_bytes())
-            .expect("Failed to save");
+            .expect("Failed to save todo");
         TodoList::load()
     }
 
