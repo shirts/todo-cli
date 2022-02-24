@@ -40,6 +40,7 @@ fn create_todo_files() -> std::result::Result<(), std::io::Error> {
             .read_to_string(&mut contents)
             .expect("Failed to read config file contents");
         if contents == String::from("") {
+            println!("recreating structure from empty file");
             let config = Config::inst();
             config.save();
         }
@@ -88,6 +89,7 @@ fn main() {
             let index = options.trim().parse::<i32>().unwrap() as usize - 1;
             todo_list.complete(index);
         }
+        Some(Action::Configure) => { config.configure() },
         Some(Action::Show) => todo_list.show(),
         None => ()
     }
